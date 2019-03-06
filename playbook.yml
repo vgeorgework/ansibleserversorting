@@ -1,0 +1,18 @@
+- name: resourse utilization playbook
+  hosts: web
+  tasks:
+
+  - name: get memory percentage
+    shell: free | grep "^Mem:" | awk '{mem_usage=($3*100)/$2} END {print mem_usage "%"}'
+    register: result
+  - debug: 
+      msg: "memory resource limit exceeded limit 30"
+    when: result.stdout >= 5
+
+  - name: get process percentage
+    shell: grep 'cpu ' /proc/stat | awk '{cpu_usage=($2+$4)*100/($2+$4+$5)} END {print cpu_usage "%"}'
+    register: result
+  - debug: var=result.stdout_lines 
+    #  msg: "process resource limit exceeded limit 30"
+    #when: result.stdout > 30
+
